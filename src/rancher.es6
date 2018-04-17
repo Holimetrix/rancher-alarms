@@ -1,3 +1,4 @@
+import * as rax from 'retry-axios';
 import axios from 'axios';
 import assert from 'assert';
 import {merge, omit} from 'lodash';
@@ -25,6 +26,9 @@ export default class RancherClient {
 
     this.address = url;
     this.projectId = projectId;
+
+    // Attach rax to axios
+    this.interceptorId = rax.attach();
   }
 
   async getCurrentProjectIdAsync() {
@@ -41,13 +45,17 @@ export default class RancherClient {
         headers: this._auth ? {
           'Authorization': 'Basic ' + new Buffer(this._auth.user + ':' + this._auth.password).toString('base64')
         } : {},
-        responseType: 'json'
+        responseType: 'json',
+        raxConfig: {
+          retry: 3,
+          noResponseRetries: 3
+        }
       }));
 
       return res.data
     }
     catch (resp) {
-      throw new Error('RancherClientError: non-200 code response ' + JSON.stringify(resp, null, 4));
+      throw new Error('RancherClientError: non-200 code response on url ' + options.url + ": " + JSON.stringify(resp, null, 4));
     }
   }
 
