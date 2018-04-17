@@ -1,4 +1,4 @@
-import _, {pairs, defaults, padRight, invoke} from 'lodash';
+import _, {toPairs, defaults, padEnd, invokeMap} from 'lodash';
 import Target from './notifications/target';
 import {info, trace, error as logError} from './log';
 import assert from 'assert';
@@ -74,7 +74,7 @@ export default class ServiceStateMonitor {
 
   setupNotificationsTargets(targets) {
     this._targets = [];
-    for (let [targetName, targetConfig] of pairs(targets)) {
+    for (let [targetName, targetConfig] of toPairs(targets)) {
       if (!targetConfig) { //skip undefined targets
         continue;
       }
@@ -143,17 +143,17 @@ export default class ServiceStateMonitor {
     this._pushState(newState);
 
     if (this.prevState !== this.state) {
-      info(`service ${padRight(this.name, 15)} ${this.prevState || 'unknown'} -> ${this.state}`);
+      info(`service ${padEnd(this.name, 15)} ${this.prevState || 'unknown'} -> ${this.state}`);
     }
 
     if (this._isHealthy && this._unhealhtyStatesBuffer.validateState('degraded')) {
       this._isHealthy = false;
       this.notifyHealthStateChangeAsync(this._isHealthy, this.prevState, this.state);
-      info(`service ${padRight(this.name, 15)} became UNHEALTHY with threshold ${this._unhealhtyStatesBuffer.length}`);
+      info(`service ${padEnd(this.name, 15)} became UNHEALTHY with threshold ${this._unhealhtyStatesBuffer.length}`);
     } else if (!this._isHealthy && this._healhtyStatesBuffer.validateState('active')) {
       this._isHealthy = true;
       this.notifyHealthStateChangeAsync(this._isHealthy, this.prevState, this.state);
-      info(`service ${padRight(this.name, 15)} became HEALTHY with threshold ${this._healhtyStatesBuffer.length}`);
+      info(`service ${padEnd(this.name, 15)} became HEALTHY with threshold ${this._healhtyStatesBuffer.length}`);
     }
   }
 
@@ -213,7 +213,7 @@ export default class ServiceStateMonitor {
     //  }
     //}
     //
-    //for (let [unitId, unitContainers] of pairs(byDeployUnit)) {
+    //for (let [unitId, unitContainers] of toPairs(byDeployUnit)) {
     //  const sidekicks = _(unitContainers)
     //    .map((c) => c.labels['io.rancher.sidekicks'] && c.labels['io.rancher.sidekicks'].split(','))
     //    .compact()
@@ -243,7 +243,7 @@ export default class ServiceStateMonitor {
 
   toString() {
     return `${this.name}:
-  targets: ${stringify(invoke(this._targets, 'toString').join(''))}
+  targets: ${stringify(invokeMap(this._targets, 'toString').join(''))}
   healthcheck: ${stringify(this.healthcheck)}
 `
   }

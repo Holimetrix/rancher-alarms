@@ -1,4 +1,4 @@
-import {padRight} from 'lodash';
+import {padEnd} from 'lodash';
 
 const LOG_LEVEL = {
   'error': 0,
@@ -43,7 +43,7 @@ function log(severity, ...args) {
     throw new Error(`unknown severity ${severity}`)
   }
 
-  console[method](padRight(`[${severity.toUpperCase()}]`, 8), padRight(date(), 25), ...args);
+  console[method](padEnd(`[${severity.toUpperCase()}]`, 8), padEnd(date(), 25), ...args);
 }
 
 function date() {

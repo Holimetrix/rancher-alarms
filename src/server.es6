@@ -1,7 +1,7 @@
 import RancherClient from './rancher';
 import resolveConfig from './config';
 import ServiceHealthMonitor from './monitor';
-import {isArray, some, keys, pluck, find, invoke, pairs, extend, merge, values} from 'lodash';
+import {isArray, some, keys, map, find, invokeMap, toPairs, extend, merge, values} from 'lodash';
 import {info, trace, error} from './log';
 import Promise, {all} from 'bluebird';
 import assert from 'assert';
@@ -36,7 +36,7 @@ import assert from 'assert';
   for (let m of monitors) {
     info(m.toString());
   }
-  invoke(values(monitors), 'start');
+  invokeMap(values(monitors), 'start');
 
   while(true) {
     await Promise.delay(config.pollServicesInterval);
@@ -49,7 +49,7 @@ import assert from 'assert';
 
     const targets = extend({}, config.notifications['*'] && config.notifications['*'].targets, config.notifications[serviceFullName] && config.notifications[serviceFullName].targets);
 
-    for(let [targetName, targetConfig] of pairs(targets)) {
+    for(let [targetName, targetConfig] of toPairs(targets)) {
       if (config.targets[targetName]) {
         merge(targetConfig, config.targets[targetName]);
       }
@@ -69,7 +69,7 @@ import assert from 'assert';
   async function updateMonitors() {
     const availableServices = (await rancher.getServices())
       .filter(globalServiceFilterPredicate);
-    const monitoredServices = pluck(monitors, 'service');
+    const monitoredServices = map(monitors, 'service');
     trace(`updating monitors`);
 
     //check if there are new services running

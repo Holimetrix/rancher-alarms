@@ -17,14 +17,14 @@ export default function envToObject(prefix) {
   const prefixRe = new RegExp('^'+prefix, 'i');
   const env = pickKeys(process.env, (k) => k.match(prefixRe));
 
-  return convertIndexedPropsToArrays(_.pairs(env)
+  return convertIndexedPropsToArrays(_.toPairs(env)
     .reduce((obj, [key, v]) => {
       return deepSet(obj, deepPropertyNotation(key), v)
     }, {}))
 }
 
 function pickKeys(obj, keyPredicate) {
-  return _.pairs(obj).reduce((filteredObj, [k,v]) => {
+  return _.toPairs(obj).reduce((filteredObj, [k,v]) => {
     if (keyPredicate(k)) {
       filteredObj[k] = v
     }
@@ -44,7 +44,7 @@ function convertIndexedPropsToArrays(obj) {
     return Array.apply(null, _.extend(_.clone(obj), {length: keys.length}))
   }
 
-  return _.pairs(obj)
+  return _.toPairs(obj)
     .reduce((newObj, [k,v]) => {
       newObj[k] = _.isObject(v) ? convertIndexedPropsToArrays(v) : v;
 

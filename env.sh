@@ -2,7 +2,7 @@
 
 set -e
 
-repo=ndelitski
+repo=holimetrix2
 
 image=rancher-alarms
 
@@ -50,7 +50,7 @@ run() {
     -e CONFIG_FILE=/etc/rancher-alarms/config.json \
     -v $(pwd)/config.json:/etc/rancher-alarms/config.json \
     --name ${container_name} \
-    ${image}
+    ${image}:latest
 }
 
 case "$1" in

@@ -5,7 +5,7 @@ export default function renderTemplate(template, data) {
   var result = template;
 
   // interpolate string
-  for (let [k,v] of _.pairs(data)) {
+  for (let [k,v] of _.toPairs(data)) {
     result = result.replace(new RegExp(`#{${k}}`, 'g'), v)
   }
 

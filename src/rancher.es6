@@ -3,6 +3,7 @@ import axios from 'axios';
 import assert from 'assert';
 import {merge, omit} from 'lodash';
 import $url from 'url';
+import {info} from './log';
 
 export default class RancherClient {
   constructor({address, version='v1', url, protocol='http', auth, projectId}) {
@@ -55,7 +56,7 @@ export default class RancherClient {
       return res.data
     }
     catch (resp) {
-      throw new Error('RancherClientError: non-200 code response on url ' + options.url + ": " + JSON.stringify(resp, null, 4));
+      throw new Error('RancherClientError: non-200 code response on url ' + options.url + ": " + resp.message);
     }
   }
 
